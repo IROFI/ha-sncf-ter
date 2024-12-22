@@ -1,6 +1,7 @@
 {
   "domain": "sncf_disruptions",
   "name": "SNCF Disruptions",
+  "config_flow": true,
   "documentation": "https://github.com/IROFI/ha-sncf-ter",
   "dependencies": [],
   "codeowners": ["@IROFI"],

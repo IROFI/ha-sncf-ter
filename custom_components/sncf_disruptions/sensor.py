@@ -42,17 +42,17 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
 })
 
-def setup_platform(hass, config, add_entities, discovery_info=None):
-    """Configuration du capteur."""
-    name = config.get(CONF_NAME)
-    token = config.get(CONF_TOKEN)
-    station1_id = config.get(CONF_STATION1_ID)
-    station1_name = config.get(CONF_STATION1_NAME)
-    station2_id = config.get(CONF_STATION2_ID)
-    station2_name = config.get(CONF_STATION2_NAME)
-
-    add_entities([SNCFDisruptionsSensor(
-        name, token, station1_id, station1_name, station2_id, station2_name
+async def async_setup_entry(hass, config_entry, async_add_entities):
+    """Set up the sensor platform."""
+    config = config_entry.data
+    
+    async_add_entities([SNCFDisruptionsSensor(
+        config[CONF_NAME],
+        config[CONF_TOKEN],
+        config[CONF_STATION1_ID],
+        config[CONF_STATION1_NAME],
+        config[CONF_STATION2_ID],
+        config[CONF_STATION2_NAME]
     )], True)
 
 class SNCFDisruptionsSensor(Entity):
