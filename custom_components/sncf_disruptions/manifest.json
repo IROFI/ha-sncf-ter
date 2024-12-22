@@ -6,5 +6,6 @@
   "codeowners": ["@IROFI"],
   "requirements": ["requests"],
   "version": "1.0.0",
-  "iot_class": "cloud_polling"
+  "iot_class": "cloud_polling",
+  "icon": "mdi:train"
 } 
