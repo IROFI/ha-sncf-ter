@@ -4,24 +4,26 @@ import logging
 import requests
 from typing import Any, Dict, Optional
 
-import voluptuous as vol
-
-from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.components.sensor import SensorEntity
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_NAME, ATTR_ATTRIBUTION
-import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.entity import Entity
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.util import Throttle
 
+from .const import (
+    DOMAIN,
+    CONF_TOKEN,
+    CONF_STATION1_ID,
+    CONF_STATION1_NAME,
+    CONF_STATION2_ID,
+    CONF_STATION2_NAME,
+    DEFAULT_NAME,
+    ATTRIBUTION,
+)
+
 _LOGGER = logging.getLogger(__name__)
-
-CONF_TOKEN = "token"
-CONF_STATION1_ID = "station1_id"
-CONF_STATION1_NAME = "station1_name"
-CONF_STATION2_ID = "station2_id"
-CONF_STATION2_NAME = "station2_name"
-
-DEFAULT_NAME = "SNCF Disruptions"
-ATTRIBUTION = "Données fournies par Navitia"
 
 # États possibles de la ligne
 LINE_STATUS = {
@@ -33,42 +35,60 @@ LINE_STATUS = {
 
 MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=5)
 
-PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
-    vol.Required(CONF_TOKEN): cv.string,
-    vol.Required(CONF_STATION1_ID): cv.string,
-    vol.Required(CONF_STATION1_NAME): cv.string,
-    vol.Required(CONF_STATION2_ID): cv.string,
-    vol.Required(CONF_STATION2_NAME): cv.string,
-    vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
-})
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up SNCF Disruptions sensor based on a config entry."""
+    async_add_entities(
+        [
+            SNCFDisruptionsSensor(
+                entry.entry_id,
+                entry.data[CONF_NAME],
+                entry.data[CONF_TOKEN],
+                entry.data[CONF_STATION1_ID],
+                entry.data[CONF_STATION1_NAME],
+                entry.data[CONF_STATION2_ID],
+                entry.data[CONF_STATION2_NAME],
+            )
+        ],
+        True,
+    )
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Set up the sensor platform."""
-    config = config_entry.data
-    
-    async_add_entities([SNCFDisruptionsSensor(
-        config[CONF_NAME],
-        config[CONF_TOKEN],
-        config[CONF_STATION1_ID],
-        config[CONF_STATION1_NAME],
-        config[CONF_STATION2_ID],
-        config[CONF_STATION2_NAME]
-    )], True)
-
-class SNCFDisruptionsSensor(Entity):
+class SNCFDisruptionsSensor(SensorEntity):
     """Représentation du capteur de perturbations SNCF."""
 
-    def __init__(self, name, token, station1_id, station1_name, station2_id, station2_name):
-        self._name = name
+    def __init__(
+        self,
+        entry_id: str,
+        name: str,
+        token: str,
+        station1_id: str,
+        station1_name: str,
+        station2_id: str,
+        station2_name: str,
+    ) -> None:
+        """Initialize the sensor."""
+        self._entry_id = entry_id
+        self._attr_name = name
         self._token = token
         self._station1 = {"id": station1_id, "name": station1_name}
         self._station2 = {"id": station2_id, "name": station2_name}
+        self._attr_unique_id = f"{entry_id}_{station1_id}_{station2_id}"
+        self._attr_device_info = DeviceInfo(
+            identifiers={(DOMAIN, self._entry_id)},
+            name=f"SNCF {station1_name}-{station2_name}",
+            manufacturer="SNCF",
+            model="Train Service",
+            sw_version="1.0.0",
+        )
         self._state = None
         self._attributes = {}
 
     @property
     def name(self):
-        return self._name
+        return self._attr_name
 
     @property
     def state(self):
