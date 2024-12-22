@@ -85,6 +85,8 @@ class SNCFDisruptionsSensor(SensorEntity):
         )
         self._state = None
         self._attributes = {}
+        self._attr_icon = "mdi:train"
+        self._attr_entity_category = None
 
     @property
     def name(self):
@@ -97,6 +99,23 @@ class SNCFDisruptionsSensor(SensorEntity):
     @property
     def extra_state_attributes(self):
         return self._attributes
+
+    @property
+    def icon(self) -> str:
+        """Icône de l'entité basée sur son état."""
+        if self._state == LINE_STATUS["normal"]:
+            return "mdi:train"
+        elif self._state == LINE_STATUS["delayed"]:
+            return "mdi:train-clock"
+        elif self._state == LINE_STATUS["disrupted"]:
+            return "mdi:train-variant-alert"
+        elif self._state == LINE_STATUS["critical"]:
+            return "mdi:train-variant-alert"
+        elif self._state == "Erreur":
+            return "mdi:alert-circle"
+        elif self._state == "Indisponible":
+            return "mdi:cloud-off-outline"
+        return self._attr_icon
 
     def calculate_delay(self, base_time, realtime):
         """Calcule le retard en minutes."""
