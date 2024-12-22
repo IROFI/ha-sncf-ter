@@ -1,0 +1,18 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Configuración de Interrupciones SNCF",
+        "description": "Configure el monitoreo de interrupciones de trenes SNCF",
+        "data": {
+          "name": "Nombre",
+          "token": "Token Navitia",
+          "station1_id": "ID Estación 1",
+          "station1_name": "Nombre Estación 1",
+          "station2_id": "ID Estación 2",
+          "station2_name": "Nombre Estación 2"
+        }
+      }
+    }
+  }
+} 

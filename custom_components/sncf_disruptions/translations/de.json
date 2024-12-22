@@ -1,0 +1,18 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SNCF Störungen Konfiguration",
+        "description": "Richten Sie die SNCF-Zugstörungsüberwachung ein",
+        "data": {
+          "name": "Name",
+          "token": "Navitia Token",
+          "station1_id": "Bahnhof 1 ID",
+          "station1_name": "Bahnhof 1 Name",
+          "station2_id": "Bahnhof 2 ID",
+          "station2_name": "Bahnhof 2 Name"
+        }
+      }
+    }
+  }
+} 

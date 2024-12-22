@@ -1,0 +1,18 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "SNCF Disruptions Configuration",
+        "description": "Set up SNCF train disruption monitoring",
+        "data": {
+          "name": "Name",
+          "token": "Navitia Token",
+          "station1_id": "Station 1 ID",
+          "station1_name": "Station 1 Name",
+          "station2_id": "Station 2 ID",
+          "station2_name": "Station 2 Name"
+        }
+      }
+    }
+  }
+} 
